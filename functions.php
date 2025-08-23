@@ -68,8 +68,8 @@ function techforum_scripts() {
     // Enqueue Font Awesome
     wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css', array(), '6.4.0');
     
-    // Enqueue theme stylesheet
-    wp_enqueue_style('techforum-style', get_stylesheet_uri(), array(), wp_get_theme()->get('Version') . '-' . time());
+    // Enqueue theme stylesheet with cache busting
+    wp_enqueue_style('techforum-style', get_stylesheet_uri(), array(), '1.1-' . time());
     
     // Enqueue theme JavaScript
     wp_enqueue_script('techforum-script', get_template_directory_uri() . '/assets/js/theme.js', array('jquery'), wp_get_theme()->get('Version'), true);
