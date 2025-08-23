@@ -69,7 +69,7 @@ function techforum_scripts() {
     wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css', array(), '6.4.0');
     
     // Enqueue theme stylesheet
-    wp_enqueue_style('techforum-style', get_stylesheet_uri(), array(), wp_get_theme()->get('Version'));
+    wp_enqueue_style('techforum-style', get_stylesheet_uri(), array(), wp_get_theme()->get('Version') . '-' . time());
     
     // Enqueue theme JavaScript
     wp_enqueue_script('techforum-script', get_template_directory_uri() . '/assets/js/theme.js', array('jquery'), wp_get_theme()->get('Version'), true);
@@ -308,6 +308,78 @@ function techforum_customize_register($wp_customize) {
         'label'   => __('Hero Description', 'techforum-theme'),
         'section' => 'techforum_hero',
         'type'    => 'textarea',
+    ));
+    
+    // Footer Section
+    $wp_customize->add_section('techforum_footer', array(
+        'title'    => __('Footer Settings', 'techforum-theme'),
+        'priority' => 140,
+    ));
+    
+    // Footer Description
+    $wp_customize->add_setting('footer_description', array(
+        'default'           => 'The ultimate community for Android, Linux, Windows, and all things tech.',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ));
+    $wp_customize->add_control('footer_description', array(
+        'label'   => __('Footer Description', 'techforum-theme'),
+        'section' => 'techforum_footer',
+        'type'    => 'textarea',
+    ));
+    
+    // Footer Column 1 Title
+    $wp_customize->add_setting('footer_title_1', array(
+        'default'           => 'TechForum',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('footer_title_1', array(
+        'label'   => __('Footer Column 1 Title', 'techforum-theme'),
+        'section' => 'techforum_footer',
+        'type'    => 'text',
+    ));
+    
+    // Footer Column 2 Title
+    $wp_customize->add_setting('footer_title_2', array(
+        'default'           => 'Navigation',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('footer_title_2', array(
+        'label'   => __('Footer Column 2 Title', 'techforum-theme'),
+        'section' => 'techforum_footer',
+        'type'    => 'text',
+    ));
+    
+    // Footer Column 3 Title
+    $wp_customize->add_setting('footer_title_3', array(
+        'default'           => 'Resources',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('footer_title_3', array(
+        'label'   => __('Footer Column 3 Title', 'techforum-theme'),
+        'section' => 'techforum_footer',
+        'type'    => 'text',
+    ));
+    
+    // Footer Column 4 Title
+    $wp_customize->add_setting('footer_title_4', array(
+        'default'           => 'Support',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('footer_title_4', array(
+        'label'   => __('Footer Column 4 Title', 'techforum-theme'),
+        'section' => 'techforum_footer',
+        'type'    => 'text',
+    ));
+    
+    // Footer Copyright
+    $wp_customize->add_setting('footer_copyright', array(
+        'default'           => 'TechForum. All rights reserved.',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('footer_copyright', array(
+        'label'   => __('Footer Copyright Text', 'techforum-theme'),
+        'section' => 'techforum_footer',
+        'type'    => 'text',
     ));
 }
 add_action('customize_register', 'techforum_customize_register');
