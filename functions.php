@@ -432,3 +432,33 @@ function techforum_remove_wp_ver_css_js($src) {
         $src = remove_query_arg('ver', $src);
     return $src;
 }
+
+/**
+ * Debug function to help troubleshoot theme issues
+ */
+function techforum_debug_info() {
+    if (current_user_can('administrator') && isset($_GET['debug'])) {
+        echo '<div style="background: #fff; padding: 20px; margin: 20px; border: 1px solid #ccc;">';
+        echo '<h3>Theme Debug Info</h3>';
+        echo '<p><strong>Template:</strong> ' . get_page_template_slug() . '</p>';
+        echo '<p><strong>Is Front Page:</strong> ' . (is_front_page() ? 'Yes' : 'No') . '</p>';
+        echo '<p><strong>Is Home:</strong> ' . (is_home() ? 'Yes' : 'No') . '</p>';
+        echo '<p><strong>Current Template:</strong> ' . basename(get_page_template()) . '</p>';
+        echo '<p><strong>Theme Directory:</strong> ' . get_template_directory() . '</p>';
+        echo '<p><strong>Posts Count:</strong> ' . wp_count_posts()->publish . '</p>';
+        echo '</div>';
+    }
+}
+add_action('wp_footer', 'techforum_debug_info');
+
+/**
+ * Ensure proper template hierarchy
+ */
+function techforum_template_redirect() {
+    if (is_front_page() && is_home()) {
+        // This is the front page showing latest posts
+        include(get_template_directory() . '/front-page.php');
+        exit;
+    }
+}
+add_action('template_redirect', 'techforum_template_redirect');
