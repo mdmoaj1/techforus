@@ -32,6 +32,9 @@
         // Initialize Posts Carousel
         initPostsCarousel();
         
+        // Initialize Forum Tabs
+        initForumTabs();
+        
     });
 
     /**
@@ -334,6 +337,34 @@
             // Fallback: Show first 4 items in a grid
             $('.posts-carousel').addClass('fallback-grid');
             $('.carousel-post-card').slice(4).hide();
+        }
+    }
+
+    /**
+     * Initialize Forum Tabs
+     */
+    function initForumTabs() {
+        const tabs = document.querySelectorAll('.forum-tab');
+        
+        if (tabs.length > 0) {
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Here you would typically load different content based on the tab
+                    const tabType = this.getAttribute('data-tab');
+                    console.log('Switched to tab:', tabType);
+                    
+                    // You can add AJAX calls here to load different thread lists
+                    // loadThreadsByType(tabType);
+                });
+            });
+            
+            console.log('Forum tabs initialized');
         }
     }
 

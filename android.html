@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Forum - TechForum</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;       /* Blue */
+            --primary-dark: #1d4ed8;  /* Darker Blue */
+            --secondary: #10b981;     /* Green */
+            --dark: #1e293b;          /* Dark Slate */
+            --light: #f8fafc;         /* Light Gray */
+            --gray: #64748b;          /* Medium Gray */
+            --accent: #8b5cf6;        /* Purple */
+            --android: #3ddc84;       /* Android Green */
+            --android-dark: #2ea86e;  /* Darker Android Green */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--dark);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+            margin-right: 0.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-android {
+            background-color: var(--android);
+        }
+        
+        .btn-android:hover {
+            background-color: var(--android-dark);
+        }
+        
+        .forum-header {
+            background: linear-gradient(rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.9)), url('https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .forum-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .forum-header h1 i {
+            color: var(--android);
+            margin-right: 0.8rem;
+            font-size: 2.8rem;
+        }
+        
+        .forum-header p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            list-style: none;
+            background-color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .breadcrumb li {
+            display: flex;
+            align-items: center;
+        }
+        
+        .breadcrumb li:not(:last-child)::after {
+            content: '/';
+            margin: 0 0.5rem;
+            color: var(--gray);
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb li:last-child a {
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .forum-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .main-content {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .sidebar-widget {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+        
+        .sidebar-widget h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .category-list {
+            list-style: none;
+        }
+        
+        .category-list li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .category-list a {
+            color: var(--dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s;
+        }
+        
+        .category-list a:hover {
+            color: var(--primary);
+        }
+        
+        .category-list i {
+            margin-right: 0.5rem;
+            color: var(--android);
+        }
+        
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background-color: #f1f5f9;
+            color: var(--gray);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .tag:hover {
+            background-color: var(--android);
+            color: white;
+        }
+        
+        .forum-tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .forum-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray);
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .forum-tab.active {
+            color: var(--android);
+        }
+        
+        .forum-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--android);
+        }
+        
+        .forum-tab:hover {
+            color: var(--android);
+        }
+        
+        .thread-list {
+            list-style: none;
+        }
+        
+        .thread-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 1.5rem;
+            transition: background-color 0.3s;
+        }
+        
+        .thread-item:hover {
+            background-color: #f8fafc;
+        }
+        
+        .thread-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .thread-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .thread-content {
+            flex: 1;
+        }
+        
+        .thread-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            text-decoration: none;
+            display: block;
+        }
+        
+        .thread-title:hover {
+            color: var(--primary);
+        }
+        
+        .thread-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .thread-meta span {
+            display: flex;
+            align-items: center;
+        }
+        
+        .thread-meta i {
+            margin-right: 0.3rem;
+        }
+        
+        .thread-preview {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .thread-tags {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .thread-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .stats-number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .stats-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding: 1.5rem;
+            gap: 0.5rem;
+        }
+        
+        .page-item {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            background-color: white;
+            color: var(--dark);
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .page-item.active {
+            background-color: var(--android);
+            color: white;
+            border-color: var(--android);
+        }
+        
+        .page-item:hover:not(.active) {
+            background-color: #f1f5f9;
+        }
+        
+        .featured-threads {
+            margin-bottom: 2rem;
+        }
+        
+        .featured-thread {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .featured-thread:last-child {
+            border-bottom: none;
+        }
+        
+        .featured-thread-icon {
+            color: var(--android);
+            font-size: 1.2rem;
+        }
+        
+        .featured-thread-content a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .featured-thread-content a:hover {
+            color: var(--primary);
+        }
+        
+        .featured-thread-meta {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 0.3rem;
+        }
+        
+        .online-users {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        .create-thread {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background-color: var(--android);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, background-color 0.3s;
+            z-index: 90;
+        }
+        
+        .create-thread:hover {
+            transform: translateY(-5px);
+            background-color: var(--android-dark);
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 3rem 0 1.5rem;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            color: var(--secondary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #334155;
+            color: white;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 992px) {
+            .forum-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .thread-item {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .thread-stats {
+                flex-direction: row;
+                width: 100%;
+                justify-content: flex-start;
+                gap: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .nav-links li {
+                margin: 0 0.5rem;
+            }
+            
+            .forum-header h1 {
+                font-size: 2rem;
+            }
+            
+            .forum-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo"><i class="fas fa-code"></i> TechForum</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#">Forums</a></li>
+                    <li><a href="#">Tutorials</a></li>
+                    <li><a href="#">Downloads</a></li>
+                    <li><a href="#">News</a></li>
+                    <li><a href="#" class="btn">Sign In</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="forum-header">
+        <div class="container">
+            <h1><i class="fab fa-android"></i> Android Forum</h1>
+            <p>Discuss Android OS, custom ROMs, apps, development, and troubleshooting for all Android devices.</p>
+            <a href="#" class="btn btn-android">Start New Thread</a>
+        </div>
+    </section>
+
+    <div class="container">
+        <ul class="breadcrumb">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">Forums</a></li>
+            <li><a href="#">Android</a></li>
+        </ul>
+
+        <div class="forum-layout">
+            <div class="main-content">
+                <div class="forum-tabs">
+                    <div class="forum-tab active">Latest</div>
+                    <div class="forum-tab">Popular</div>
+                    <div class="forum-tab">Unanswered</div>
+                    <div class="forum-tab">Featured</div>
+                </div>
+
+                <ul class="thread-list">
+                    <li class="thread-item">
+                        <div class="thread-avatar">
+                            <img src="https://i.pravatar.cc/150?img=1" alt="User Avatar">
+                        </div>
+                        <div class="thread-content">
+                            <a href="#" class="thread-title">Android 14 Beta 3 Released: New Features and Improvements</a>
+                            <div class="thread-meta">
+                                <span><i class="fas fa-user"></i> AndroidDev</span>
+                                <span><i class="far fa-clock"></i> 2 hours ago</span>
+                                <span><i class="fas fa-eye"></i> 1.2k views</span>
+                            </div>
+                            <p class="thread-preview">Google has released Android 14 Beta 3 with several new features including improved privacy controls, enhanced notification management, and better battery optimization...</p>
+                            <div class="thread-tags">
+                                <span class="tag">Android 14</span>
+                                <span class="tag">Beta</span>
+                                <span class="tag">Google</span>
+                            </div>
+                        </div>
+                        <div class="thread-stats">
+                            <div class="stats-number">42</div>
+                            <div class="stats-label">Replies</div>
+                        </div>
+                    </li>
+                    <li class="thread-item">
+                        <div class="thread-avatar">
+                            <img src="https://i.pravatar.cc/150?img=2" alt="User Avatar">
+                        </div>
+                        <div class="thread-content">
+                            <a href="#" class="thread-title">[GUIDE] How to Install Custom ROMs on Samsung Galaxy S23 Ultra</a>
+                            <div class="thread-meta">
+                                <span><i class="fas fa-user"></i> ROMmaster</span>
+                                <span><i class="far fa-clock"></i> Yesterday</span>
+                                <span><i class="fas fa-eye"></i> 3.5k views</span>
+                            </div>
+                            <p class="thread-preview">Complete step-by-step guide to unlock bootloader, install TWRP recovery, and flash custom ROMs on the Samsung Galaxy S23 Ultra. Includes troubleshooting tips...</p>
+                            <div class="thread-tags">
+                                <span class="tag">Samsung</span>
+                                <span class="tag">Galaxy S23</span>
+                                <span class="tag">Custom ROM</span>
+                                <span class="tag">TWRP</span>
+                            </div>
+                        </div>
+                        <div class="thread-stats">
+                            <div class="stats-number">87</div>
+                            <div class="stats-label">Replies</div>
+                        </div>
+                    </li>
+                    <li class="thread-item">
+                        <div class="thread-avatar">
+                            <img src="https://i.pravatar.cc/150?img=3" alt="User Avatar">
+                        </div>
+                        <div class="thread-content">
+                            <a href="#" class="thread-title">Pixel Experience ROM for OnePlus 11 - Official Release</a>
+                            <div class="thread-meta">
+                                <span><i class="fas fa-user"></i> PixelMaster</span>
+                                <span><i class="far fa-clock"></i> 3 days ago</span>
+                                <span><i class="fas fa-eye"></i> 5.8k views</span>
+                            </div>
+                            <p class="thread-preview">Official release of Pixel Experience ROM for OnePlus 11. Brings pure Google Pixel experience with all Pixel features. Android 13 based with monthly security updates...</p>
+                            <div class="thread-tags">
+                                <span class="tag">OnePlus</span>
+                                <span class="tag">Pixel Experience</span>
+                                <span class="tag">ROM</span>
+                            </div>
+                        </div>
+                        <div class="thread-stats">
+                            <div class="stats-number">124</div>
+                            <div class="stats-label">Replies</div>
+                        </div>
+                    </li>
+                    <li class="thread-item">
+                        <div class="thread-avatar">
+                            <img src="https://i.pravatar.cc/150?img=4" alt="User Avatar">
+                        </div>
+                        <div class="thread-content">
+                            <a href="#" class="thread-title">[SOLVED] Battery Drain Issues After Android 13 Update</a>
+                            <div class="thread-meta">
+                                <span><i class="fas fa-user"></i> BatteryGuru</span>
+                                <span><i class="far fa-clock"></i> 5 days ago</span>
+                                <span><i class="fas fa-eye"></i> 7.2k views</span>
+                            </div>
+                            <p class="thread-preview">Experiencing severe battery drain after updating to Android 13? Here's a comprehensive guide to diagnose and fix battery issues, including identifying rogue apps...</p>
+                            <div class="thread-tags">
+                                <span class="tag">Battery</span>
+                                <span class="tag">Android 13</span>
+                                <span class="tag">Troubleshooting</span>
+                            </div>
+                        </div>
+                        <div class="thread-stats">
+                            <div class="stats-number">156</div>
+                            <div class="stats-label">Replies</div>
+                        </div>
+                    </li>
+                    <li class="thread-item">
+                        <div class="thread-avatar">
+                            <img src="https://i.pravatar.cc/150?img=5" alt="User Avatar">
+                        </div>
+                        <div class="thread-content">
+                            <a href="#" class="thread-title">Best Magisk Modules of 2023 - Ultimate Collection</a>
+                            <div class="thread-meta">
+                                <span><i class="fas fa-user"></i> RootWizard</span>
+                                <span><i class="far fa-clock"></i> 1 week ago</span>
+                                <span><i class="fas fa-eye"></i> 12.4k views</span>
+                            </div>
+                            <p class="thread-preview">Curated list of the best Magisk modules in 2023. Includes performance enhancers, battery optimizers, audio mods, camera improvements, and system tweaks...</p>
+                            <div class="thread-tags">
+                                <span class="tag">Magisk</span>
+                                <span class="tag">Root</span>
+                                <span class="tag">Modules</span>
+                            </div>
+                        </div>
+                        <div class="thread-stats">
+                            <div class="stats-number">203</div>
+                            <div class="stats-label">Replies</div>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="pagination">
+                    <a href="#" class="page-item"><i class="fas fa-angle-left"></i></a>
+                    <a href="#" class="page-item active">1</a>
+                    <a href="#" class="page-item">2</a>
+                    <a href="#" class="page-item">3</a>
+                    <a href="#" class="page-item">4</a>
+                    <a href="#" class="page-item">5</a>
+                    <a href="#" class="page-item"><i class="fas fa-angle-right"></i></a>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-widget">
+                    <h3>Categories</h3>
+                    <ul class="category-list">
+                        <li><a href="#"><i class="fas fa-mobile-alt"></i> Android Devices</a></li>
+                        <li><a href="#"><i class="fas fa-code"></i> Development</a></li>
+                        <li><a href="#"><i class="fas fa-cog"></i> Custom ROMs</a></li>
+                        <li><a href="#"><i class="fas fa-terminal"></i> Root & Mods</a></li>
+                        <li><a href="#"><i class="fas fa-rocket"></i> Performance</a></li>
+                        <li><a href="#"><i class="fas fa-battery-full"></i> Battery</a></li>
+                        <li><a href="#"><i class="fas fa-camera"></i> Camera</a></li>
+                        <li><a href="#"><i class="fas fa-question-circle"></i> Troubleshooting</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h3>Featured Threads</h3>
+                    <div class="featured-threads">
+                        <div class="featured-thread">
+                            <div class="featured-thread-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="featured-thread-content">
+                                <a href="#">Complete Android Root Guide 2023</a>
+                                <div class="featured-thread-meta">
+                                    <span>By RootMaster • 15.3k views</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="featured-thread">
+                            <div class="featured-thread-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="featured-thread-content">
+                                <a href="#">Android 14 Feature Roundup</a>
+                                <div class="featured-thread-meta">
+                                    <span>By GoogleExpert • 8.7k views</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="featured-thread">
+                            <div class="featured-thread-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="featured-thread-content">
+                                <a href="#">Top 10 GCam Ports for 2023</a>
+                                <div class="featured-thread-meta">
+                                    <span>By PixelShooter • 12.1k views</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h3>Popular Tags</h3>
+                    <div class="tag-cloud">
+                        <span class="tag">Android 14</span>
+                        <span class="tag">Samsung</span>
+                        <span class="tag">Pixel</span>
+                        <span class="tag">OnePlus</span>
+                        <span class="tag">MIUI</span>
+                        <span class="tag">Root</span>
+                        <span class="tag">Magisk</span>
+                        <span class="tag">Custom ROM</span>
+                        <span class="tag">LineageOS</span>
+                        <span class="tag">TWRP</span>
+                        <span class="tag">Kernel</span>
+                        <span class="tag">Xposed</span>
+                        <span class="tag">Bootloader</span>
+                        <span class="tag">ADB</span>
+                        <span class="tag">Fastboot</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h3>Online Users</h3>
+                    <div class="online-users">
+                        <div class="user-avatar">
+                            <img src="https://i.pravatar.cc/150?img=11" alt="User Avatar">
+                        </div>
+                        <div class="user-avatar">
+                            <img src="https://i.pravatar.cc/150?img=12" alt="User Avatar">
+                        </div>
+                        <div class="user-avatar">
+                            <img src="https://i.pravatar.cc/150?img=13" alt="User Avatar">
+                        </div>
+                        <div class="user-avatar">
+                            <img src="https://i.pravatar.cc/150?img=14" alt="User Avatar">
+                        </div>
+                        <div class="user-avatar">
+                            <img src="https://i.pravatar.cc/150?img=15" alt="User Avatar">
+                        </div>
+                        <div class="user-avatar">
+                            <img src="https://i.pravatar.cc/150?img=16" alt="User Avatar">
+                        </div>
+                        <div class="user-avatar">
+                            <img src="https://i.pravatar.cc/150?img=17" alt="User Avatar">
+                        </div>
+                        <div class="user-avatar">
+                            <img src="https://i.pravatar.cc/150?img=18" alt="User Avatar">
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray);">
+                        <strong>253</strong> users online now • <a href="#" style="color: var(--primary);">View All</a>
+                    </p>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h3>Latest Android News</h3>
+                    <div class="featured-threads">
+                        <div class="featured-thread">
+                            <div class="featured-thread-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <div class="featured-thread-content">
+                                <a href="#">Google Announces Pixel 8a with Tensor G3</a>
+                                <div class="featured-thread-meta">
+                                    <span>3 hours ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="featured-thread">
+                            <div class="featured-thread-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <div class="featured-thread-content">
+                                <a href="#">Samsung One UI 6.1 Rolling Out to Older Devices</a>
+                                <div class="featured-thread-meta">
+                                    <span>Yesterday</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="featured-thread">
+                            <div class="featured-thread-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <div class="featured-thread-content">
+                                <a href="#">LineageOS 21 Now Available for 50+ Devices</a>
+                                <div class="featured-thread-meta">
+                                    <span>2 days ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background-color: white; border-radius: 8px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+            <h2 style="margin-bottom: 1.5rem; color: var(--dark);">Popular Android Device Forums</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+                <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.2rem; transition: transform 0.3s, box-shadow 0.3s;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; align-items: center;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/2560px-Google_2015_logo.svg.png" alt="Google" style="height: 20px; margin-right: 0.5rem;">
+                        Google Pixel
+                    </h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">Pixel 8 Pro</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">Pixel 8</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">Pixel 7 Series</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">Pixel 6 Series</a></li>
+                        <li><a href="#" style="color: var(--primary); text-decoration: none;">View All Pixel Devices →</a></li>
+                    </ul>
+                </div>
+                <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.2rem; transition: transform 0.3s, box-shadow 0.3s;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; align-items: center;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/2560px-Samsung_Logo.svg.png" alt="Samsung" style="height: 20px; margin-right: 0.5rem;">
+                        Samsung Galaxy
+                    </h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">Galaxy S23 Series</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">Galaxy S22 Series</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">Galaxy Z Fold/Flip</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">Galaxy A Series</a></li>
+                        <li><a href="#" style="color: var(--primary); text-decoration: none;">View All Samsung Devices →</a></li>
+                    </ul>
+                </div>
+                <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.2rem; transition: transform 0.3s, box-shadow 0.3s;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; align-items: center;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Xiaomi_logo_%282021-%29.svg/2560px-Xiaomi_logo_%282021-%29.svg.png" alt="Xiaomi" style="height: 20px; margin-right: 0.5rem;">
+                        Xiaomi
+                    </h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">Xiaomi 13 Series</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">Redmi Note 12 Series</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">POCO F5 Series</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">Xiaomi 12 Series</a></li>
+                        <li><a href="#" style="color: var(--primary); text-decoration: none;">View All Xiaomi Devices →</a></li>
+                    </ul>
+                </div>
+                <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.2rem; transition: transform 0.3s, box-shadow 0.3s;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; align-items: center;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/OnePlus_logo.svg/2560px-OnePlus_logo.svg.png" alt="OnePlus" style="height: 20px; margin-right: 0.5rem;">
+                        OnePlus
+                    </h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">OnePlus 11 Series</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">OnePlus 10 Series</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">OnePlus Nord Series</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--dark); text-decoration: none; transition: color 0.3s;">OnePlus 9 Series</a></li>
+                        <li><a href="#" style="color: var(--primary); text-decoration: none;">View All OnePlus Devices →</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div style="background-color: white; border-radius: 8px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+            <h2 style="margin-bottom: 1.5rem; color: var(--dark);">Android Development Resources</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div style="width: 50px; height: 50px; background-color: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-code" style="font-size: 1.5rem; color: var(--android);"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Android SDK Tutorials</h3>
+                        <p style="color: var(--gray); margin-bottom: 0.5rem;">Learn Android app development with our comprehensive SDK tutorials.</p>
+                        <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 500;">View Tutorials →</a>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div style="width: 50px; height: 50px; background-color: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-terminal" style="font-size: 1.5rem; color: var(--android);"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">ADB & Fastboot Guides</h3>
+                        <p style="color: var(--gray); margin-bottom: 0.5rem;">Master Android Debug Bridge and Fastboot commands for device control.</p>
+                        <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 500;">View Guides →</a>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div style="width: 50px; height: 50px; background-color: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-unlock-alt" style="font-size: 1.5rem; color: var(--android);"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Bootloader Unlocking</h3>
+                        <p style="color: var(--gray); margin-bottom: 0.5rem;">Device-specific guides for unlocking bootloaders safely and effectively.</p>
+                        <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 500;">View Guides →</a>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div style="width: 50px; height: 50px; background-color: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-cog" style="font-size: 1.5rem; color: var(--android);"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Custom ROM Development</h3>
+                        <p style="color: var(--gray); margin-bottom: 0.5rem;">Learn how to build, customize, and maintain your own Android ROM.</p>
+                        <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 500;">View Tutorials →</a>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div style="width: 50px; height: 50px; background-color: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-shield-alt" style="font-size: 1.5rem; color: var(--android);"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Root & Security</h3>
+                        <p style="color: var(--gray); margin-bottom: 0.5rem;">Safe rooting methods and security considerations for Android devices.</p>
+                        <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 500;">View Guides →</a>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div style="width: 50px; height: 50px; background-color: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-microchip" style="font-size: 1.5rem; color: var(--android);"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Kernel Development</h3>
+                        <p style="color: var(--gray); margin-bottom: 0.5rem;">Learn to compile and customize Android kernels for better performance.</p>
+                        <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 500;">View Tutorials →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" class="create-thread">
+        <i class="fas fa-plus"></i>
+    </a>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>About Us</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Forums</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Android</a></li>
+                        <li><a href="#">iOS</a></li>
+                        <li><a href="#">Windows</a></li>
+                        <li><a href="#">Linux</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">Downloads</a></li>
+                        <li><a href="#">News</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 TechForum. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.forum-tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Here you would typically load different content based on the tab
+                    // For demo purposes, we're just changing the tab appearance
+                });
+            });
+            
+            // Device forum hover effects
+            const deviceForums = document.querySelectorAll('[style*="border: 1px solid #e2e8f0"]');
+            deviceForums.forEach(forum => {
+                forum.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
+                });
+                
+                forum.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

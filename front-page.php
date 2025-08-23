@@ -80,7 +80,7 @@ get_header(); ?>
                         <i class="fab fa-android"></i>
                     </div>
                     <div class="topic-content">
-                        <h3>Android</h3>
+                        <h3><a href="<?php echo home_url('/android/'); ?>">Android</a></h3>
                         <p>12.5k discussions</p>
                     </div>
                 </div>
@@ -89,7 +89,7 @@ get_header(); ?>
                         <i class="fab fa-linux"></i>
                     </div>
                     <div class="topic-content">
-                        <h3>Linux</h3>
+                        <h3><a href="<?php echo home_url('/linux/'); ?>">Linux</a></h3>
                         <p>8.3k discussions</p>
                     </div>
                 </div>
@@ -98,7 +98,7 @@ get_header(); ?>
                         <i class="fab fa-windows"></i>
                     </div>
                     <div class="topic-content">
-                        <h3>Windows</h3>
+                        <h3><a href="<?php echo home_url('/windows/'); ?>">Windows</a></h3>
                         <p>7.1k discussions</p>
                     </div>
                 </div>
@@ -107,7 +107,7 @@ get_header(); ?>
                         <i class="fas fa-mobile-alt"></i>
                     </div>
                     <div class="topic-content">
-                        <h3>Custom ROMs</h3>
+                        <h3><a href="<?php echo home_url('/custom-roms/'); ?>">Custom ROMs</a></h3>
                         <p>9.7k discussions</p>
                     </div>
                 </div>
@@ -116,7 +116,7 @@ get_header(); ?>
                         <i class="fas fa-microchip"></i>
                     </div>
                     <div class="topic-content">
-                        <h3>Bootloaders</h3>
+                        <h3><a href="<?php echo home_url('/bootloaders/'); ?>">Bootloaders</a></h3>
                         <p>5.2k discussions</p>
                     </div>
                 </div>
@@ -125,7 +125,7 @@ get_header(); ?>
                         <i class="fas fa-terminal"></i>
                     </div>
                     <div class="topic-content">
-                        <h3>Root Access</h3>
+                        <h3><a href="<?php echo home_url('/root-access/'); ?>">Root Access</a></h3>
                         <p>6.8k discussions</p>
                     </div>
                 </div>
@@ -134,7 +134,7 @@ get_header(); ?>
                         <i class="fas fa-code-branch"></i>
                     </div>
                     <div class="topic-content">
-                        <h3>Development</h3>
+                        <h3><a href="<?php echo home_url('/development/'); ?>">Development</a></h3>
                         <p>10.3k discussions</p>
                     </div>
                 </div>
@@ -143,7 +143,7 @@ get_header(); ?>
                         <i class="fas fa-shield-alt"></i>
                     </div>
                     <div class="topic-content">
-                        <h3>Security</h3>
+                        <h3><a href="<?php echo home_url('/security/'); ?>">Security</a></h3>
                         <p>4.9k discussions</p>
                     </div>
                 </div>
