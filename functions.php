@@ -70,15 +70,16 @@ function techforum_scripts() {
     wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css', array(), '5.3.0');
     wp_enqueue_style('bootstrap-icons', 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css', array(), '1.10.5');
     wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap', array(), '1.0');
-    wp_enqueue_style('custom-style', get_template_directory_uri() . '/assets/css/main.css', array(), '1.0');
-    // wp_enqueue_style('custom-style', get_template_directory_uri() . '/assets/css/style.css', array(), '1.0');
-    // Enqueue theme stylesheet with cache busting
-    wp_enqueue_style('techforum-style', get_stylesheet_uri(), array(), '1.1-' . time());
     
     // Enqueue Owl Carousel
     wp_enqueue_style('owl-carousel', 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css', array(), '2.3.4');
     wp_enqueue_style('owl-theme', 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css', array(), '2.3.4');
     wp_enqueue_script('owl-carousel-js', 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js', array('jquery'), '2.3.4', true);
+    
+    wp_enqueue_style('custom-style', get_template_directory_uri() . '/assets/css/main.css', array(), '1.0');
+    // wp_enqueue_style('custom-style', get_template_directory_uri() . '/assets/css/style.css', array(), '1.0');
+    // Enqueue theme stylesheet with cache busting
+    wp_enqueue_style('techforum-style', get_stylesheet_uri(), array(), '1.1-' . time());
     
     // Enqueue theme JavaScript
     wp_enqueue_script('techforum-script', get_template_directory_uri() . '/assets/js/theme.js', array('jquery', 'owl-carousel-js'), wp_get_theme()->get('Version'), true);

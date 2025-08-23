@@ -179,12 +179,13 @@ get_header(); ?>
     <section class="latest-posts-carousel">
         <div class="container">
             <div class="section-title">
-                <h2>Latest Posts</h2>
-                <p>Stay updated with our latest articles, tutorials, and tech discussions</p>
+                <h2>Latest Tech Insights</h2>
+                <p>Stay updated with the newest articles, tutorials, and discussions from our community</p>
             </div>
             
             <div class="posts-carousel owl-carousel owl-theme">
                 <?php
+                // Query latest posts
                 $latest_posts = new WP_Query(array(
                     'post_type' => 'post',
                     'posts_per_page' => 8,
@@ -195,75 +196,101 @@ get_header(); ?>
                 
                 if ($latest_posts->have_posts()) :
                     while ($latest_posts->have_posts()) : $latest_posts->the_post();
+                        $categories = get_the_category();
+                        $primary_category = !empty($categories) ? $categories[0] : null;
+                        $reading_time = ceil(str_word_count(get_the_content()) / 200);
                 ?>
-                    <div class="carousel-post-card">
-                        <div class="carousel-post-image">
-                            <?php if (has_post_thumbnail()) : ?>
-                                <a href="<?php the_permalink(); ?>">
-                                    <?php the_post_thumbnail('techforum-featured', array('alt' => get_the_title())); ?>
-                                </a>
-                            <?php else : ?>
-                                <a href="<?php the_permalink(); ?>">
-                                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="<?php the_title_attribute(); ?>">
-                                </a>
+                
+                <div class="carousel-post-card">
+                    <div class="carousel-post-image">
+                        <?php if (has_post_thumbnail()) : ?>
+                            <img src="<?php echo get_the_post_thumbnail_url(get_the_ID(), 'medium_large'); ?>" alt="<?php the_title_attribute(); ?>">
+                        <?php else : ?>
+                            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="<?php the_title_attribute(); ?>">
+                        <?php endif; ?>
+                        
+                        <div class="post-overlay">
+                            <?php if ($primary_category) : ?>
+                                <span class="category-badge"><?php echo esc_html($primary_category->name); ?></span>
                             <?php endif; ?>
-                            <div class="post-overlay">
-                                <div class="post-category">
-                                    <?php
-                                    $categories = get_the_category();
-                                    if (!empty($categories)) {
-                                        echo '<span class="category-badge">' . esc_html($categories[0]->name) . '</span>';
-                                    }
-                                    ?>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="carousel-post-content">
+                        <div class="post-meta">
+                            <span><i class="fas fa-calendar-alt"></i> <?php echo get_the_date('M j, Y'); ?></span>
+                            <span><i class="fas fa-clock"></i> <?php echo $reading_time; ?> min read</span>
+                            <span><i class="fas fa-user"></i> <?php echo get_the_author(); ?></span>
                         </div>
                         
-                        <div class="carousel-post-content">
-                            <div class="post-meta">
-                                <span class="post-date">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <?php echo get_the_date('M j, Y'); ?>
+                        <h3 class="carousel-post-title">
+                            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                        </h3>
+                        
+                        <div class="carousel-post-excerpt">
+                            <?php echo wp_trim_words(get_the_excerpt(), 15, '...'); ?>
+                        </div>
+                        
+                        <div class="carousel-post-footer">
+                            <a href="<?php the_permalink(); ?>" class="read-more-btn">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                            
+                            <div class="post-stats">
+                                <span class="comments-count">
+                                    <i class="fas fa-comments"></i>
+                                    <?php echo get_comments_number(); ?>
                                 </span>
-                                <span class="post-author">
-                                    <i class="fas fa-user"></i>
-                                    <?php the_author(); ?>
-                                </span>
-                            </div>
-                            
-                            <h3 class="carousel-post-title">
-                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                            </h3>
-                            
-                            <p class="carousel-post-excerpt">
-                                <?php echo wp_trim_words(get_the_excerpt(), 15, '...'); ?>
-                            </p>
-                            
-                            <div class="carousel-post-footer">
-                                <a href="<?php the_permalink(); ?>" class="read-more-btn">
-                                    Read More
-                                    <i class="fas fa-arrow-right"></i>
-                                </a>
-                                <div class="post-stats">
-                                    <span class="comments-count">
-                                        <i class="fas fa-comments"></i>
-                                        <?php comments_number('0', '1', '%'); ?>
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     </div>
-                <?php
+                </div>
+                
+                <?php 
                     endwhile;
                     wp_reset_postdata();
-                endif;
+                else : 
                 ?>
+                
+                <!-- Fallback content if no posts -->
+                <div class="carousel-post-card">
+                    <div class="carousel-post-image">
+                        <img src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Tech Community">
+                        <div class="post-overlay">
+                            <span class="category-badge">Technology</span>
+                        </div>
+                    </div>
+                    <div class="carousel-post-content">
+                        <div class="post-meta">
+                            <span><i class="fas fa-calendar-alt"></i> <?php echo date('M j, Y'); ?></span>
+                            <span><i class="fas fa-clock"></i> 5 min read</span>
+                            <span><i class="fas fa-user"></i> TechForus Team</span>
+                        </div>
+                        <h3 class="carousel-post-title">
+                            <a href="#">Welcome to TechForus Community</a>
+                        </h3>
+                        <div class="carousel-post-excerpt">
+                            Join our growing community of tech enthusiasts, developers, and innovators sharing knowledge and experiences.
+                        </div>
+                        <div class="carousel-post-footer">
+                            <a href="#" class="read-more-btn">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <div class="post-stats">
+                                <span class="comments-count">
+                                    <i class="fas fa-comments"></i> 0
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <?php endif; ?>
             </div>
             
             <div class="carousel-navigation">
-                <a href="<?php echo esc_url(home_url('/blog/')); ?>" class="btn btn-secondary view-all-posts">
-                    View All Posts
-                    <i class="fas fa-arrow-right"></i>
+                <a href="<?php echo get_permalink(get_option('page_for_posts')); ?>" class="view-all-posts btn btn-secondary">
+                    View All Posts <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>

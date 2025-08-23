@@ -29,8 +29,8 @@
         // Social Share Enhancement
         initSocialShare();
         
-        // Initialize Owl Carousel
-        initOwlCarousel();
+        // Initialize Posts Carousel
+        initPostsCarousel();
         
     });
 
@@ -164,25 +164,63 @@
      * Back to Top Button
      */
     function initBackToTop() {
+        // Remove existing button if any
+        $('#back-to-top').remove();
+        
         // Add back to top button
-        $('body').append('<button id="back-to-top" title="Back to Top"><i class="fas fa-arrow-up"></i></button>');
+        $('body').append('<button id="back-to-top" title="Back to Top" aria-label="Back to Top"><i class="fas fa-arrow-up"></i></button>');
+        
+        var $backToTop = $('#back-to-top');
+        
+        // Check if Font Awesome is loaded
+        setTimeout(function() {
+            var $icon = $backToTop.find('i');
+            var iconStyles = window.getComputedStyle($icon[0]);
+            
+            // If Font Awesome is loaded, the icon should have font-family containing 'Font Awesome'
+            if (iconStyles.fontFamily.indexOf('Font Awesome') !== -1 || 
+                iconStyles.fontFamily.indexOf('FontAwesome') !== -1) {
+                $backToTop.addClass('has-icon');
+            } else {
+                // Font Awesome not loaded, use fallback
+                console.log('Font Awesome not detected, using fallback arrow');
+            }
+        }, 100);
         
         // Show/hide button based on scroll position
         $(window).on('scroll', function() {
-            if ($(this).scrollTop() > 300) {
-                $('#back-to-top').fadeIn();
+            var scrollTop = $(this).scrollTop();
+            if (scrollTop > 300) {
+                $backToTop.fadeIn(300);
             } else {
-                $('#back-to-top').fadeOut();
+                $backToTop.fadeOut(300);
             }
         });
         
         // Smooth scroll to top
-        $('#back-to-top').on('click', function() {
+        $backToTop.on('click', function(e) {
+            e.preventDefault();
             $('html, body').animate({
                 scrollTop: 0
             }, 800);
             return false;
         });
+        
+        // Handle keyboard navigation
+        $backToTop.on('keydown', function(e) {
+            if (e.keyCode === 13 || e.keyCode === 32) { // Enter or Space
+                e.preventDefault();
+                $(this).click();
+            }
+        });
+        
+        // Initial check for scroll position
+        if ($(window).scrollTop() > 300) {
+            $backToTop.show();
+        }
+        
+        // Debug: Log button creation
+        console.log('Back to top button initialized');
     }
 
     /**
@@ -206,73 +244,6 @@
             document.querySelectorAll('img[data-src]').forEach(img => {
                 imageObserver.observe(img);
             });
-        }
-    }
-
-    /**
-     * Initialize Owl Carousel
-     */
-    function initOwlCarousel() {
-        if ($('.posts-carousel').length && typeof $.fn.owlCarousel !== 'undefined') {
-            $('.posts-carousel').owlCarousel({
-                loop: true,
-                margin: 20,
-                nav: true,
-                dots: true,
-                autoplay: true,
-                autoplayTimeout: 5000,
-                autoplayHoverPause: true,
-                smartSpeed: 800,
-                navText: ['<span>‹</span>', '<span>›</span>'],
-                responsive: {
-                    0: {
-                        items: 1,
-                        nav: false,
-                        margin: 10
-                    },
-                    576: {
-                        items: 2,
-                        nav: false,
-                        margin: 15
-                    },
-                    768: {
-                        items: 2,
-                        nav: true,
-                        margin: 20
-                    },
-                    992: {
-                        items: 3,
-                        nav: true,
-                        margin: 20
-                    },
-                    1200: {
-                        items: 4,
-                        nav: true,
-                        margin: 20
-                    }
-                },
-                onInitialized: function() {
-                    // Add custom animations
-                    $('.carousel-post-card').addClass('animate-in');
-                },
-                onChanged: function() {
-                    // Reset animations on slide change
-                    $('.carousel-post-card').removeClass('animate-in');
-                    setTimeout(function() {
-                        $('.owl-item.active .carousel-post-card').addClass('animate-in');
-                    }, 100);
-                }
-            });
-            
-            // Custom navigation enhancement
-            $('.posts-carousel').on('mouseenter', function() {
-                $(this).find('.owl-nav').addClass('visible');
-            }).on('mouseleave', function() {
-                $(this).find('.owl-nav').removeClass('visible');
-            });
-            
-            // Add loading animation
-            $('.posts-carousel').addClass('carousel-loaded');
         }
     }
 
@@ -306,6 +277,64 @@
             
             return false;
         });
+    }
+
+    /**
+     * Initialize Posts Carousel
+     */
+    function initPostsCarousel() {
+        if ($('.posts-carousel').length && typeof $.fn.owlCarousel !== 'undefined') {
+            $('.posts-carousel').owlCarousel({
+                loop: true,
+                margin: 20,
+                nav: true,
+                dots: true,
+                autoplay: true,
+                autoplayTimeout: 5000,
+                autoplayHoverPause: true,
+                navText: [
+                    '<i class="fas fa-chevron-left"></i>',
+                    '<i class="fas fa-chevron-right"></i>'
+                ],
+                responsive: {
+                    0: {
+                        items: 1,
+                        nav: false
+                    },
+                    600: {
+                        items: 2,
+                        nav: true
+                    },
+                    1000: {
+                        items: 3,
+                        nav: true
+                    },
+                    1200: {
+                        items: 4,
+                        nav: true
+                    }
+                },
+                onInitialized: function() {
+                    $('.posts-carousel').addClass('carousel-loaded');
+                    $('.carousel-post-card').addClass('animate-in');
+                    console.log('Posts carousel initialized successfully');
+                },
+                onTranslated: function() {
+                    // Add animation class to visible items
+                    $('.owl-item.active .carousel-post-card').addClass('animate-in');
+                }
+            });
+            
+            // Add hover effect to navigation
+            $('.posts-carousel .owl-nav').addClass('visible');
+            
+        } else if ($('.posts-carousel').length) {
+            console.warn('Owl Carousel library not loaded or posts carousel element not found');
+            
+            // Fallback: Show first 4 items in a grid
+            $('.posts-carousel').addClass('fallback-grid');
+            $('.carousel-post-card').slice(4).hide();
+        }
     }
 
     /**
