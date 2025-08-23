@@ -29,6 +29,9 @@
         // Social Share Enhancement
         initSocialShare();
         
+        // Initialize Owl Carousel
+        initOwlCarousel();
+        
     });
 
     /**
@@ -203,6 +206,73 @@
             document.querySelectorAll('img[data-src]').forEach(img => {
                 imageObserver.observe(img);
             });
+        }
+    }
+
+    /**
+     * Initialize Owl Carousel
+     */
+    function initOwlCarousel() {
+        if ($('.posts-carousel').length && typeof $.fn.owlCarousel !== 'undefined') {
+            $('.posts-carousel').owlCarousel({
+                loop: true,
+                margin: 20,
+                nav: true,
+                dots: true,
+                autoplay: true,
+                autoplayTimeout: 5000,
+                autoplayHoverPause: true,
+                smartSpeed: 800,
+                navText: ['<span>‹</span>', '<span>›</span>'],
+                responsive: {
+                    0: {
+                        items: 1,
+                        nav: false,
+                        margin: 10
+                    },
+                    576: {
+                        items: 2,
+                        nav: false,
+                        margin: 15
+                    },
+                    768: {
+                        items: 2,
+                        nav: true,
+                        margin: 20
+                    },
+                    992: {
+                        items: 3,
+                        nav: true,
+                        margin: 20
+                    },
+                    1200: {
+                        items: 4,
+                        nav: true,
+                        margin: 20
+                    }
+                },
+                onInitialized: function() {
+                    // Add custom animations
+                    $('.carousel-post-card').addClass('animate-in');
+                },
+                onChanged: function() {
+                    // Reset animations on slide change
+                    $('.carousel-post-card').removeClass('animate-in');
+                    setTimeout(function() {
+                        $('.owl-item.active .carousel-post-card').addClass('animate-in');
+                    }, 100);
+                }
+            });
+            
+            // Custom navigation enhancement
+            $('.posts-carousel').on('mouseenter', function() {
+                $(this).find('.owl-nav').addClass('visible');
+            }).on('mouseleave', function() {
+                $(this).find('.owl-nav').removeClass('visible');
+            });
+            
+            // Add loading animation
+            $('.posts-carousel').addClass('carousel-loaded');
         }
     }
 

@@ -75,8 +75,13 @@ function techforum_scripts() {
     // Enqueue theme stylesheet with cache busting
     wp_enqueue_style('techforum-style', get_stylesheet_uri(), array(), '1.1-' . time());
     
+    // Enqueue Owl Carousel
+    wp_enqueue_style('owl-carousel', 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css', array(), '2.3.4');
+    wp_enqueue_style('owl-theme', 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css', array(), '2.3.4');
+    wp_enqueue_script('owl-carousel-js', 'https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js', array('jquery'), '2.3.4', true);
+    
     // Enqueue theme JavaScript
-    wp_enqueue_script('techforum-script', get_template_directory_uri() . '/assets/js/theme.js', array('jquery'), wp_get_theme()->get('Version'), true);
+    wp_enqueue_script('techforum-script', get_template_directory_uri() . '/assets/js/theme.js', array('jquery', 'owl-carousel-js'), wp_get_theme()->get('Version'), true);
     
     // Enqueue comment reply script
     if (is_singular() && comments_open() && get_option('thread_comments')) {
