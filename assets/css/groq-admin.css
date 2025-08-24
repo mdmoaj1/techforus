@@ -1,0 +1,753 @@
+/**
+ * Groq AI Admin Interface Styles
+ */
+
+/* Main Container */
+.groq-ai-admin {
+    background: #f1f1f1;
+    margin: 0;
+}
+
+.groq-ai-admin h1 {
+    color: #1e293b;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.groq-ai-admin h1 .dashicons {
+    color: #667eea;
+    font-size: 2rem;
+}
+
+.groq-admin-container {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 2rem;
+    max-width: 1400px;
+}
+
+.groq-main-content {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.groq-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Cards */
+.groq-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.groq-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.groq-card-header h2,
+.groq-card-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Status Indicator */
+.groq-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff4757;
+    animation: pulse 2s infinite;
+}
+
+.groq-status.connected .status-dot {
+    background: #2ed573;
+}
+
+.groq-status.testing .status-dot {
+    background: #ffa502;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Form Styles */
+.groq-card form {
+    padding: 2rem;
+}
+
+.groq-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.groq-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.groq-form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.95rem;
+}
+
+.groq-input,
+.groq-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.groq-input:focus,
+.groq-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.groq-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.groq-input-group .groq-input {
+    flex: 1;
+}
+
+/* Range Input */
+.groq-range {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.groq-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.groq-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.groq-range-value {
+    display: inline-block;
+    margin-left: 0.5rem;
+    font-weight: 600;
+    color: #667eea;
+    min-width: 30px;
+}
+
+/* Custom Checkbox */
+.groq-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.groq-checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.groq-checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.groq-checkbox-label input[type="checkbox"]:checked + .groq-checkbox-custom {
+    background: #667eea;
+    border-color: #667eea;
+}
+
+.groq-checkbox-label input[type="checkbox"]:checked + .groq-checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* Help Text */
+.groq-help-text {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.groq-help-text a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.groq-help-text a:hover {
+    text-decoration: underline;
+}
+
+/* Buttons */
+.groq-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.groq-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+}
+
+.groq-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    color: #fff;
+}
+
+.groq-btn-secondary {
+    background: #f8f9fa;
+    color: #495057;
+    border: 2px solid #dee2e6;
+}
+
+.groq-btn-secondary:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+    color: #495057;
+}
+
+.groq-btn-danger {
+    background: #dc3545;
+    color: #fff;
+}
+
+.groq-btn-danger:hover {
+    background: #c82333;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.groq-form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #eee;
+}
+
+/* Model Details */
+.groq-model-details {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    border: 2px solid #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+    display: none;
+}
+
+.groq-model-details.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.groq-model-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.groq-model-stat {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.groq-model-stat-value {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 0.25rem;
+}
+
+.groq-model-stat-label {
+    display: block;
+    font-size: 0.85rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+.groq-model-description {
+    font-size: 0.95rem;
+    color: #495057;
+    font-style: italic;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #667eea;
+}
+
+/* Stats */
+.groq-stats {
+    padding: 1.5rem;
+}
+
+.groq-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.groq-stat-item:last-child {
+    margin-bottom: 0;
+}
+
+.groq-stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #667eea;
+    line-height: 1;
+}
+
+.groq-stat-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
+/* Forum Status */
+.groq-forum-status {
+    padding: 1.5rem;
+}
+
+.groq-forum-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.groq-forum-item:last-child {
+    border-bottom: none;
+}
+
+.groq-forum-name {
+    font-size: 0.9rem;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+/* Toggle Switch */
+.groq-forum-toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #ccc;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.groq-forum-toggle.active {
+    background: #667eea;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.groq-forum-toggle.active .toggle-slider {
+    transform: translateX(20px);
+}
+
+/* Loading States */
+.groq-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.groq-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Notifications */
+.groq-notification {
+    position: fixed;
+    top: 32px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 500;
+    z-index: 9999;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.groq-notification.show {
+    transform: translateX(0);
+}
+
+.groq-notification.success {
+    background: #28a745;
+}
+
+.groq-notification.error {
+    background: #dc3545;
+}
+
+.groq-notification.warning {
+    background: #ffc107;
+    color: #212529;
+}
+
+.groq-notification.info {
+    background: #17a2b8;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .groq-admin-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .groq-sidebar {
+        order: -1;
+    }
+    
+    .groq-sidebar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .groq-ai-admin h1 {
+        font-size: 1.5rem;
+    }
+    
+    .groq-form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .groq-card form {
+        padding: 1.5rem;
+    }
+    
+    .groq-form-actions {
+        flex-direction: column;
+    }
+    
+    .groq-btn {
+        justify-content: center;
+    }
+    
+    .groq-sidebar {
+        grid-template-columns: 1fr;
+    }
+    
+    .groq-model-info {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .groq-admin-container {
+        gap: 1rem;
+    }
+    
+    .groq-card-header {
+        padding: 1rem;
+    }
+    
+    .groq-card form {
+        padding: 1rem;
+    }
+    
+    .groq-stats,
+    .groq-forum-status {
+        padding: 1rem;
+    }
+    
+    .groq-model-info {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Enhanced Contrast and Readability */
+.groq-card-header h2,
+.groq-card-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Better text contrast in model details */
+.groq-model-details {
+    color: #1e293b;
+}
+
+.groq-model-details .groq-model-stat-value {
+    color: #667eea;
+    text-shadow: none;
+}
+
+.groq-model-details .groq-model-stat-label {
+    color: #475569;
+}
+
+/* Improve checkbox label readability */
+.groq-checkbox-label {
+    color: #1e293b;
+    font-weight: 500;
+}
+
+/* Better button contrast */
+.groq-btn {
+    font-weight: 600;
+    letter-spacing: 0.025em;
+}
+
+.groq-btn-secondary {
+    background: #f8fafc;
+    color: #374151;
+    border: 2px solid #d1d5db;
+}
+
+.groq-btn-secondary:hover {
+    background: #f1f5f9;
+    border-color: #9ca3af;
+    color: #1f2937;
+}
+
+/* Improve input field contrast */
+.groq-input,
+.groq-select {
+    color: #1e293b;
+    border-color: #d1d5db;
+    background: #ffffff;
+}
+
+.groq-input::placeholder {
+    color: #9ca3af;
+}
+
+/* Better range slider visibility */
+.groq-range {
+    background: #e5e7eb;
+}
+
+.groq-range::-webkit-slider-thumb {
+    background: #667eea;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.groq-range::-moz-range-thumb {
+    background: #667eea;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .groq-ai-admin {
+        background: #1e1e1e;
+    }
+    
+    .groq-ai-admin h1 {
+        color: #f1f5f9;
+    }
+    
+    .groq-card {
+        background: #2d2d2d;
+        color: #f1f5f9;
+    }
+    
+    .groq-form-group label,
+    .groq-forum-name,
+    .groq-checkbox-label {
+        color: #f1f5f9;
+    }
+    
+    .groq-input,
+    .groq-select {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f1f5f9;
+    }
+    
+    .groq-input::placeholder {
+        color: #9ca3af;
+    }
+    
+    .groq-model-details {
+        background: #374151;
+        border-color: #667eea;
+        color: #f1f5f9;
+    }
+    
+    .groq-model-stat {
+        background: #4b5563;
+        border-color: #6b7280;
+    }
+    
+    .groq-model-stat-label {
+        color: #d1d5db;
+    }
+    
+    .groq-forum-item {
+        border-bottom-color: #4b5563;
+    }
+    
+    .groq-help-text {
+        color: #d1d5db;
+    }
+    
+    .groq-stat-label {
+        color: #d1d5db;
+    }
+}
+
+/* Animation for smooth transitions */
+* {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Focus styles for accessibility */
+.groq-btn:focus,
+.groq-input:focus,
+.groq-select:focus,
+.groq-range:focus,
+.groq-forum-toggle:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .groq-card {
+        border: 2px solid #000;
+    }
+    
+    .groq-btn-primary {
+        background: #000;
+        border: 2px solid #000;
+    }
+    
+    .groq-input,
+    .groq-select {
+        border-width: 3px;
+    }
+}

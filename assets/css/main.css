@@ -2451,6 +2451,269 @@ img {
     }
 }
 
+/* AI Forum Integration Styles */
+.user-country {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.thread-item .thread-meta .user-country i {
+    margin-right: 0.25rem;
+}
+
+.online-stats {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #64748b;
+    text-align: center;
+}
+
+.online-stats strong {
+    color: #1e293b;
+}
+
+.view-all-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.view-all-link:hover {
+    color: #5a67d8;
+    text-decoration: underline;
+}
+
+/* Forum Sections */
+.forum-section {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.forum-section h2 {
+    margin-bottom: 1.5rem;
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Device Forums Grid */
+.device-forums-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.device-forum-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.2rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.device-forum-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.device-forum-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    color: #1e293b;
+}
+
+.brand-logo {
+    height: 20px;
+    margin-right: 0.5rem;
+}
+
+.device-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.device-list li {
+    margin-bottom: 0.5rem;
+}
+
+.device-list a {
+    color: #64748b;
+    text-decoration: none;
+    transition: color 0.3s;
+    font-size: 0.9rem;
+}
+
+.device-list a:hover {
+    color: #667eea;
+}
+
+.device-list .view-all {
+    color: #667eea;
+    font-weight: 500;
+}
+
+/* Development Resources Grid */
+.dev-resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.resource-card {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.resource-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.resource-icon {
+    width: 50px;
+    height: 50px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.resource-icon i {
+    font-size: 1.5rem;
+    color: #3ddc84;
+}
+
+.resource-content h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #1e293b;
+}
+
+.resource-content p {
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.resource-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.resource-link:hover {
+    color: #5a67d8;
+    text-decoration: underline;
+}
+
+/* Floating Create Thread Button */
+.create-thread-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #3ddc84 0%, #2ea86e 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(61, 220, 132, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+    z-index: 90;
+}
+
+.create-thread-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(61, 220, 132, 0.4);
+    color: white;
+}
+
+/* Pagination Improvements */
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding: 1.5rem;
+    gap: 0.5rem;
+}
+
+.pagination .page-numbers {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background-color: white;
+    color: #64748b;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: 1px solid #e2e8f0;
+    font-weight: 500;
+}
+
+.pagination .page-numbers:hover {
+    background-color: #f1f5f9;
+    color: #1e293b;
+}
+
+.pagination .page-numbers.current {
+    background-color: #3ddc84;
+    color: white;
+    border-color: #3ddc84;
+}
+
+/* Responsive Improvements */
+@media (max-width: 768px) {
+    .forum-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .device-forums-grid,
+    .dev-resources-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .resource-card {
+        padding: 1rem;
+    }
+    
+    .create-thread-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        bottom: 1rem;
+        right: 1rem;
+    }
+    
+    .user-country {
+        display: none; /* Hide on mobile for space */
+    }
+}
+
 /* Forum Page Specific Styles */
 .linux-header {
     background: linear-gradient(rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.9)), 
