@@ -1,0 +1,11 @@
+---
+deployment:
+  tasks:
+    # 1. Set the target WordPress themes folder
+    - export DEPLOYPATH=/home/techfo10/public_html/wp-content/themes
+
+    # 2. Remove the old copy of your theme (optional but ensures clean deploy)
+    - /bin/rm -rf $DEPLOYPATH/mytheme
+
+    # 3. Copy your theme from the repo into the themes folder
+    - /bin/cp -R mytheme $DEPLOYPATH/
