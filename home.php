@@ -15,6 +15,17 @@ get_header(); ?>
                 
                 <header class="page-header">
                     <h1 class="page-title"><?php _e('Latest Posts', 'techforum-theme'); ?></h1>
+                    <div class="kaios-section-intro">
+                        <div class="kaios-banner">
+                            <div class="kaios-banner-content">
+                                <h3>🔥 Explore KaiOS Development</h3>
+                                <p>Discover the complete guide to KaiOS development, apps, and community resources</p>
+                                <a href="<?php echo esc_url(home_url('/kaios')); ?>" class="btn btn-kaios">
+                                    <i class="fas fa-mobile-alt"></i> Visit KaiOS Page
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </header>
                 
                 <div class="posts-container">

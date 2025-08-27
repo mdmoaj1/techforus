@@ -84,6 +84,17 @@ function techforum_scripts() {
     // Enqueue theme JavaScript
     wp_enqueue_script('techforum-script', get_template_directory_uri() . '/assets/js/theme.js', array('jquery', 'owl-carousel-js'), wp_get_theme()->get('Version'), true);
     
+    // Enqueue forum authentication script
+    wp_enqueue_script('forum-auth', get_template_directory_uri() . '/assets/js/forum-auth.js', array('jquery'), wp_get_theme()->get('Version'), true);
+    
+    // Localize scripts for AJAX
+    wp_localize_script('forum-auth', 'forumAuth', array(
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('forum_auth_nonce'),
+        'isLoggedIn' => ForumAuth::is_logged_in(),
+        'currentUser' => ForumAuth::get_current_user()
+    ));
+    
     // Enqueue comment reply script
     if (is_singular() && comments_open() && get_option('thread_comments')) {
         wp_enqueue_script('comment-reply');
@@ -142,6 +153,769 @@ function techforum_widgets_init() {
     ));
 }
 add_action('widgets_init', 'techforum_widgets_init');
+
+/**
+ * Custom Forum Authentication System
+ */
+
+// Create custom database tables for forum users
+function create_forum_user_tables() {
+    global $wpdb;
+    
+    $charset_collate = $wpdb->get_charset_collate();
+    
+    // Forum users table
+    $table_name = $wpdb->prefix . 'forum_users';
+    
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        username varchar(50) NOT NULL UNIQUE,
+        email varchar(100) NOT NULL UNIQUE,
+        password varchar(255) NOT NULL,
+        display_name varchar(100) NOT NULL,
+        avatar_url varchar(255) DEFAULT '',
+        reputation int(11) DEFAULT 0,
+        posts_count int(11) DEFAULT 0,
+        registration_date datetime DEFAULT CURRENT_TIMESTAMP,
+        last_login datetime DEFAULT NULL,
+        status enum('active', 'suspended', 'banned') DEFAULT 'active',
+        email_verified tinyint(1) DEFAULT 0,
+        bio text DEFAULT '',
+        location varchar(100) DEFAULT '',
+        website varchar(255) DEFAULT '',
+        PRIMARY KEY (id),
+        KEY username (username),
+        KEY email (email)
+    ) $charset_collate;";
+    
+    // Forum sessions table
+    $sessions_table = $wpdb->prefix . 'forum_sessions';
+    
+    $sql2 = "CREATE TABLE $sessions_table (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        user_id mediumint(9) NOT NULL,
+        session_token varchar(64) NOT NULL UNIQUE,
+        expires datetime NOT NULL,
+        ip_address varchar(45) DEFAULT '',
+        user_agent text DEFAULT '',
+        created_at datetime DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        KEY user_id (user_id),
+        KEY session_token (session_token),
+        KEY expires (expires)
+    ) $charset_collate;";
+    
+    // Forum posts table
+    $posts_table = $wpdb->prefix . 'forum_posts';
+    
+    $sql3 = "CREATE TABLE $posts_table (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        user_id mediumint(9) NOT NULL,
+        category varchar(50) NOT NULL,
+        title varchar(255) NOT NULL,
+        content text NOT NULL,
+        status enum('published', 'draft', 'moderated') DEFAULT 'published',
+        views int(11) DEFAULT 0,
+        replies_count int(11) DEFAULT 0,
+        last_reply_date datetime DEFAULT NULL,
+        created_date datetime DEFAULT CURRENT_TIMESTAMP,
+        updated_date datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        is_pinned tinyint(1) DEFAULT 0,
+        is_locked tinyint(1) DEFAULT 0,
+        PRIMARY KEY (id),
+        KEY user_id (user_id),
+        KEY category (category),
+        KEY created_date (created_date)
+    ) $charset_collate;";
+    
+    // Forum replies table
+    $replies_table = $wpdb->prefix . 'forum_replies';
+    
+    $sql4 = "CREATE TABLE $replies_table (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        post_id mediumint(9) NOT NULL,
+        user_id mediumint(9) NOT NULL,
+        content text NOT NULL,
+        status enum('published', 'moderated') DEFAULT 'published',
+        created_date datetime DEFAULT CURRENT_TIMESTAMP,
+        updated_date datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        parent_reply_id mediumint(9) DEFAULT NULL,
+        PRIMARY KEY (id),
+        KEY post_id (post_id),
+        KEY user_id (user_id),
+        KEY parent_reply_id (parent_reply_id)
+    ) $charset_collate;";
+    
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+    dbDelta($sql2);
+    dbDelta($sql3);
+    dbDelta($sql4);
+}
+
+// Run table creation on theme activation
+add_action('after_switch_theme', 'create_forum_user_tables');
+
+/**
+ * Register Custom Taxonomies
+ */
+function register_custom_taxonomies() {
+    // KaiOS Taxonomy
+    $labels = array(
+        'name'                       => _x('KaiOS Categories', 'Taxonomy General Name', 'techforum-theme'),
+        'singular_name'              => _x('KaiOS Category', 'Taxonomy Singular Name', 'techforum-theme'),
+        'menu_name'                  => __('KaiOS Categories', 'techforum-theme'),
+        'all_items'                  => __('All KaiOS Categories', 'techforum-theme'),
+        'parent_item'                => __('Parent KaiOS Category', 'techforum-theme'),
+        'parent_item_colon'          => __('Parent KaiOS Category:', 'techforum-theme'),
+        'new_item_name'              => __('New KaiOS Category Name', 'techforum-theme'),
+        'add_new_item'               => __('Add New KaiOS Category', 'techforum-theme'),
+        'edit_item'                  => __('Edit KaiOS Category', 'techforum-theme'),
+        'update_item'                => __('Update KaiOS Category', 'techforum-theme'),
+        'view_item'                  => __('View KaiOS Category', 'techforum-theme'),
+        'separate_items_with_commas' => __('Separate KaiOS categories with commas', 'techforum-theme'),
+        'add_or_remove_items'        => __('Add or remove KaiOS categories', 'techforum-theme'),
+        'choose_from_most_used'      => __('Choose from the most used', 'techforum-theme'),
+        'popular_items'              => __('Popular KaiOS Categories', 'techforum-theme'),
+        'search_items'               => __('Search KaiOS Categories', 'techforum-theme'),
+        'not_found'                  => __('Not Found', 'techforum-theme'),
+        'no_terms'                   => __('No KaiOS categories', 'techforum-theme'),
+        'items_list'                 => __('KaiOS categories list', 'techforum-theme'),
+        'items_list_navigation'      => __('KaiOS categories list navigation', 'techforum-theme'),
+    );
+    
+    $args = array(
+        'labels'                     => $labels,
+        'hierarchical'               => true,
+        'public'                     => true,
+        'show_ui'                    => true,
+        'show_admin_column'          => true,
+        'show_in_nav_menus'          => true,
+        'show_tagcloud'              => true,
+        'show_in_rest'               => true,
+        'rewrite'                    => array('slug' => 'kaios-category'),
+    );
+    
+    register_taxonomy('kaios_category', array('post', 'forum_post'), $args);
+    
+    // Tech Categories Taxonomy (for other sections)
+    $tech_labels = array(
+        'name'                       => _x('Tech Categories', 'Taxonomy General Name', 'techforum-theme'),
+        'singular_name'              => _x('Tech Category', 'Taxonomy Singular Name', 'techforum-theme'),
+        'menu_name'                  => __('Tech Categories', 'techforum-theme'),
+        'all_items'                  => __('All Tech Categories', 'techforum-theme'),
+        'parent_item'                => __('Parent Tech Category', 'techforum-theme'),
+        'parent_item_colon'          => __('Parent Tech Category:', 'techforum-theme'),
+        'new_item_name'              => __('New Tech Category Name', 'techforum-theme'),
+        'add_new_item'               => __('Add New Tech Category', 'techforum-theme'),
+        'edit_item'                  => __('Edit Tech Category', 'techforum-theme'),
+        'update_item'                => __('Update Tech Category', 'techforum-theme'),
+        'view_item'                  => __('View Tech Category', 'techforum-theme'),
+        'separate_items_with_commas' => __('Separate tech categories with commas', 'techforum-theme'),
+        'add_or_remove_items'        => __('Add or remove tech categories', 'techforum-theme'),
+        'choose_from_most_used'      => __('Choose from the most used', 'techforum-theme'),
+        'popular_items'              => __('Popular Tech Categories', 'techforum-theme'),
+        'search_items'               => __('Search Tech Categories', 'techforum-theme'),
+        'not_found'                  => __('Not Found', 'techforum-theme'),
+        'no_terms'                   => __('No tech categories', 'techforum-theme'),
+        'items_list'                 => __('Tech categories list', 'techforum-theme'),
+        'items_list_navigation'      => __('Tech categories list navigation', 'techforum-theme'),
+    );
+    
+    $tech_args = array(
+        'labels'                     => $tech_labels,
+        'hierarchical'               => true,
+        'public'                     => true,
+        'show_ui'                    => true,
+        'show_admin_column'          => true,
+        'show_in_nav_menus'          => true,
+        'show_tagcloud'              => true,
+        'show_in_rest'               => true,
+        'rewrite'                    => array('slug' => 'tech-category'),
+    );
+    
+    register_taxonomy('tech_category', array('post', 'forum_post'), $tech_args);
+}
+add_action('init', 'register_custom_taxonomies', 0);
+
+/**
+ * Add default taxonomy terms
+ */
+function add_default_taxonomy_terms() {
+    // KaiOS Categories
+    if (!term_exists('KaiOS Development', 'kaios_category')) {
+        wp_insert_term('KaiOS Development', 'kaios_category', array(
+            'description' => 'Development and programming for KaiOS',
+            'slug' => 'kaios-development'
+        ));
+    }
+    
+    if (!term_exists('KaiOS Apps', 'kaios_category')) {
+        wp_insert_term('KaiOS Apps', 'kaios_category', array(
+            'description' => 'KaiOS applications and app reviews',
+            'slug' => 'kaios-apps'
+        ));
+    }
+    
+    if (!term_exists('KaiOS Devices', 'kaios_category')) {
+        wp_insert_term('KaiOS Devices', 'kaios_category', array(
+            'description' => 'KaiOS devices and hardware',
+            'slug' => 'kaios-devices'
+        ));
+    }
+    
+    if (!term_exists('KaiOS Modding', 'kaios_category')) {
+        wp_insert_term('KaiOS Modding', 'kaios_category', array(
+            'description' => 'KaiOS modifications and customization',
+            'slug' => 'kaios-modding'
+        ));
+    }
+    
+    if (!term_exists('KaiOS Support', 'kaios_category')) {
+        wp_insert_term('KaiOS Support', 'kaios_category', array(
+            'description' => 'KaiOS help and support',
+            'slug' => 'kaios-support'
+        ));
+    }
+    
+    // Tech Categories
+    $tech_categories = array(
+        'Android' => 'Android development and customization',
+        'Linux' => 'Linux systems and distributions',
+        'Windows' => 'Windows systems and applications',
+        'Security' => 'Cybersecurity and privacy',
+        'Root Access' => 'Root access and system modifications',
+        'Custom ROMs' => 'Custom ROM development and installation',
+        'General Tech' => 'General technology discussions'
+    );
+    
+    foreach ($tech_categories as $name => $description) {
+        if (!term_exists($name, 'tech_category')) {
+            wp_insert_term($name, 'tech_category', array(
+                'description' => $description,
+                'slug' => sanitize_title($name)
+            ));
+        }
+    }
+}
+add_action('init', 'add_default_taxonomy_terms');
+
+/**
+ * Forum Authentication Class
+ */
+class ForumAuth {
+    
+    public static function register_user($username, $email, $password, $display_name) {
+        global $wpdb;
+        
+        // Validate input
+        if (empty($username) || empty($email) || empty($password) || empty($display_name)) {
+            return array('success' => false, 'message' => 'All fields are required.');
+        }
+        
+        // Check if username or email already exists
+        $table_name = $wpdb->prefix . 'forum_users';
+        $existing = $wpdb->get_row($wpdb->prepare(
+            "SELECT id FROM $table_name WHERE username = %s OR email = %s",
+            $username, $email
+        ));
+        
+        if ($existing) {
+            return array('success' => false, 'message' => 'Username or email already exists.');
+        }
+        
+        // Hash password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        
+        // Insert user
+        $result = $wpdb->insert(
+            $table_name,
+            array(
+                'username' => sanitize_text_field($username),
+                'email' => sanitize_email($email),
+                'password' => $hashed_password,
+                'display_name' => sanitize_text_field($display_name),
+                'registration_date' => current_time('mysql')
+            ),
+            array('%s', '%s', '%s', '%s', '%s')
+        );
+        
+        if ($result === false) {
+            return array('success' => false, 'message' => 'Registration failed. Please try again.');
+        }
+        
+        return array('success' => true, 'message' => 'Registration successful!', 'user_id' => $wpdb->insert_id);
+    }
+    
+    public static function login_user($username, $password) {
+        global $wpdb;
+        
+        if (empty($username) || empty($password)) {
+            return array('success' => false, 'message' => 'Username and password are required.');
+        }
+        
+        $table_name = $wpdb->prefix . 'forum_users';
+        $user = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM $table_name WHERE username = %s OR email = %s",
+            $username, $username
+        ));
+        
+        if (!$user || !password_verify($password, $user->password)) {
+            return array('success' => false, 'message' => 'Invalid username or password.');
+        }
+        
+        if ($user->status !== 'active') {
+            return array('success' => false, 'message' => 'Account is suspended or banned.');
+        }
+        
+        // Create session
+        $session_token = bin2hex(random_bytes(32));
+        $expires = date('Y-m-d H:i:s', strtotime('+30 days'));
+        
+        $sessions_table = $wpdb->prefix . 'forum_sessions';
+        $wpdb->insert(
+            $sessions_table,
+            array(
+                'user_id' => $user->id,
+                'session_token' => $session_token,
+                'expires' => $expires,
+                'ip_address' => $_SERVER['REMOTE_ADDR'],
+                'user_agent' => $_SERVER['HTTP_USER_AGENT']
+            ),
+            array('%d', '%s', '%s', '%s', '%s')
+        );
+        
+        // Update last login
+        $wpdb->update(
+            $table_name,
+            array('last_login' => current_time('mysql')),
+            array('id' => $user->id),
+            array('%s'),
+            array('%d')
+        );
+        
+        // Set session cookie
+        setcookie('forum_session', $session_token, strtotime('+30 days'), '/', '', is_ssl(), true);
+        
+        return array('success' => true, 'message' => 'Login successful!', 'user' => $user);
+    }
+    
+    public static function get_current_user() {
+        global $wpdb;
+        
+        if (!isset($_COOKIE['forum_session'])) {
+            return null;
+        }
+        
+        $session_token = sanitize_text_field($_COOKIE['forum_session']);
+        $sessions_table = $wpdb->prefix . 'forum_sessions';
+        $users_table = $wpdb->prefix . 'forum_users';
+        
+        $session = $wpdb->get_row($wpdb->prepare(
+            "SELECT s.*, u.* FROM $sessions_table s 
+             JOIN $users_table u ON s.user_id = u.id 
+             WHERE s.session_token = %s AND s.expires > NOW()",
+            $session_token
+        ));
+        
+        return $session;
+    }
+    
+    public static function logout_user() {
+        global $wpdb;
+        
+        if (isset($_COOKIE['forum_session'])) {
+            $session_token = sanitize_text_field($_COOKIE['forum_session']);
+            $sessions_table = $wpdb->prefix . 'forum_sessions';
+            
+            $wpdb->delete(
+                $sessions_table,
+                array('session_token' => $session_token),
+                array('%s')
+            );
+            
+            setcookie('forum_session', '', time() - 3600, '/', '', is_ssl(), true);
+        }
+        
+        return array('success' => true, 'message' => 'Logged out successfully!');
+    }
+    
+    public static function is_logged_in() {
+        return self::get_current_user() !== null;
+    }
+}
+
+// AJAX handlers for authentication
+add_action('wp_ajax_forum_register', 'handle_forum_register');
+add_action('wp_ajax_nopriv_forum_register', 'handle_forum_register');
+
+function handle_forum_register() {
+    check_ajax_referer('forum_auth_nonce', 'nonce');
+    
+    $username = sanitize_text_field($_POST['username']);
+    $email = sanitize_email($_POST['email']);
+    $password = $_POST['password'];
+    $display_name = sanitize_text_field($_POST['display_name']);
+    
+    $result = ForumAuth::register_user($username, $email, $password, $display_name);
+    
+    wp_send_json($result);
+}
+
+add_action('wp_ajax_forum_login', 'handle_forum_login');
+add_action('wp_ajax_nopriv_forum_login', 'handle_forum_login');
+
+function handle_forum_login() {
+    check_ajax_referer('forum_auth_nonce', 'nonce');
+    
+    $username = sanitize_text_field($_POST['username']);
+    $password = $_POST['password'];
+    
+    $result = ForumAuth::login_user($username, $password);
+    
+    wp_send_json($result);
+}
+
+add_action('wp_ajax_forum_logout', 'handle_forum_logout');
+add_action('wp_ajax_nopriv_forum_logout', 'handle_forum_logout');
+
+function handle_forum_logout() {
+    check_ajax_referer('forum_auth_nonce', 'nonce');
+    
+    $result = ForumAuth::logout_user();
+    
+    wp_send_json($result);
+}
+
+/**
+ * Forum Post and Reply Management
+ */
+class ForumPostManager {
+    
+    public static function create_post($user_id, $category, $title, $content, $kaios_category = '', $tech_category = '') {
+        global $wpdb;
+        
+        if (empty($title) || empty($content) || empty($category)) {
+            return array('success' => false, 'message' => 'Title, content, and category are required.');
+        }
+        
+        // Create WordPress post for better integration
+        $post_data = array(
+            'post_title'    => sanitize_text_field($title),
+            'post_content'  => wp_kses_post($content),
+            'post_status'   => 'publish',
+            'post_author'   => 1, // Use admin user for forum posts
+            'post_type'     => 'post',
+            'meta_input'    => array(
+                'forum_user_id' => $user_id,
+                'forum_category' => sanitize_text_field($category),
+                'is_forum_post' => true
+            )
+        );
+        
+        $wp_post_id = wp_insert_post($post_data);
+        
+        if (is_wp_error($wp_post_id)) {
+            return array('success' => false, 'message' => 'Failed to create post.');
+        }
+        
+        // Assign KaiOS taxonomy if specified
+        if (!empty($kaios_category)) {
+            $term = get_term_by('slug', $kaios_category, 'kaios_category');
+            if ($term) {
+                wp_set_post_terms($wp_post_id, array($term->term_id), 'kaios_category');
+            }
+        }
+        
+        // Assign Tech taxonomy if specified
+        if (!empty($tech_category)) {
+            $term = get_term_by('slug', $tech_category, 'tech_category');
+            if ($term) {
+                wp_set_post_terms($wp_post_id, array($term->term_id), 'tech_category');
+            }
+        }
+        
+        // Also create entry in custom forum_posts table for compatibility
+        $posts_table = $wpdb->prefix . 'forum_posts';
+        
+        $result = $wpdb->insert(
+            $posts_table,
+            array(
+                'user_id' => $user_id,
+                'category' => sanitize_text_field($category),
+                'title' => sanitize_text_field($title),
+                'content' => wp_kses_post($content),
+                'created_date' => current_time('mysql')
+            ),
+            array('%d', '%s', '%s', '%s', '%s')
+        );
+        
+        // Update user post count
+        $users_table = $wpdb->prefix . 'forum_users';
+        $wpdb->query($wpdb->prepare(
+            "UPDATE $users_table SET posts_count = posts_count + 1 WHERE id = %d",
+            $user_id
+        ));
+        
+        return array('success' => true, 'message' => 'Post created successfully!', 'post_id' => $wpdb->insert_id, 'wp_post_id' => $wp_post_id);
+    }
+    
+    public static function create_reply($user_id, $post_id, $content, $parent_reply_id = null) {
+        global $wpdb;
+        
+        if (empty($content)) {
+            return array('success' => false, 'message' => 'Content is required.');
+        }
+        
+        $replies_table = $wpdb->prefix . 'forum_replies';
+        $posts_table = $wpdb->prefix . 'forum_posts';
+        
+        $result = $wpdb->insert(
+            $replies_table,
+            array(
+                'post_id' => $post_id,
+                'user_id' => $user_id,
+                'content' => wp_kses_post($content),
+                'parent_reply_id' => $parent_reply_id,
+                'created_date' => current_time('mysql')
+            ),
+            array('%d', '%d', '%s', '%d', '%s')
+        );
+        
+        if ($result === false) {
+            return array('success' => false, 'message' => 'Failed to create reply.');
+        }
+        
+        // Update post reply count and last reply date
+        $wpdb->update(
+            $posts_table,
+            array(
+                'replies_count' => $wpdb->get_var($wpdb->prepare(
+                    "SELECT COUNT(*) FROM $replies_table WHERE post_id = %d",
+                    $post_id
+                )),
+                'last_reply_date' => current_time('mysql')
+            ),
+            array('id' => $post_id),
+            array('%d', '%s'),
+            array('%d')
+        );
+        
+        // Update user post count
+        $users_table = $wpdb->prefix . 'forum_users';
+        $wpdb->query($wpdb->prepare(
+            "UPDATE $users_table SET posts_count = posts_count + 1 WHERE id = %d",
+            $user_id
+        ));
+        
+        return array('success' => true, 'message' => 'Reply posted successfully!', 'reply_id' => $wpdb->insert_id);
+    }
+    
+    public static function get_posts($category = '', $limit = 20, $offset = 0) {
+        global $wpdb;
+        
+        $posts_table = $wpdb->prefix . 'forum_posts';
+        $users_table = $wpdb->prefix . 'forum_users';
+        
+        $where_clause = '';
+        $params = array();
+        
+        if (!empty($category)) {
+            $where_clause = 'WHERE p.category = %s';
+            $params[] = $category;
+        }
+        
+        $params[] = $limit;
+        $params[] = $offset;
+        
+        $query = "
+            SELECT p.*, u.display_name, u.avatar_url, u.reputation 
+            FROM $posts_table p 
+            JOIN $users_table u ON p.user_id = u.id 
+            $where_clause 
+            ORDER BY p.is_pinned DESC, p.last_reply_date DESC, p.created_date DESC 
+            LIMIT %d OFFSET %d
+        ";
+        
+        return $wpdb->get_results($wpdb->prepare($query, $params));
+    }
+    
+    public static function get_post_with_replies($post_id) {
+        global $wpdb;
+        
+        $posts_table = $wpdb->prefix . 'forum_posts';
+        $replies_table = $wpdb->prefix . 'forum_replies';
+        $users_table = $wpdb->prefix . 'forum_users';
+        
+        // Get post details
+        $post = $wpdb->get_row($wpdb->prepare("
+            SELECT p.*, u.display_name, u.avatar_url, u.reputation 
+            FROM $posts_table p 
+            JOIN $users_table u ON p.user_id = u.id 
+            WHERE p.id = %d
+        ", $post_id));
+        
+        if (!$post) {
+            return null;
+        }
+        
+        // Update view count
+        $wpdb->update(
+            $posts_table,
+            array('views' => $post->views + 1),
+            array('id' => $post_id),
+            array('%d'),
+            array('%d')
+        );
+        
+        // Get replies
+        $replies = $wpdb->get_results($wpdb->prepare("
+            SELECT r.*, u.display_name, u.avatar_url, u.reputation 
+            FROM $replies_table r 
+            JOIN $users_table u ON r.user_id = u.id 
+            WHERE r.post_id = %d 
+            ORDER BY r.created_date ASC
+        ", $post_id));
+        
+        return array('post' => $post, 'replies' => $replies);
+    }
+    
+    public static function get_kaios_posts($limit = 10) {
+        // Get posts with KaiOS taxonomy
+        $args = array(
+            'post_type' => 'post',
+            'posts_per_page' => $limit,
+            'meta_query' => array(
+                array(
+                    'key' => 'is_forum_post',
+                    'value' => true,
+                    'compare' => '='
+                )
+            ),
+            'tax_query' => array(
+                array(
+                    'taxonomy' => 'kaios_category',
+                    'field'    => 'slug',
+                    'terms'    => array('kaios-development', 'kaios-apps', 'kaios-devices', 'kaios-modding', 'kaios-support'),
+                    'operator' => 'IN'
+                )
+            ),
+            'orderby' => 'date',
+            'order' => 'DESC'
+        );
+        
+        $posts = get_posts($args);
+        $formatted_posts = array();
+        
+        foreach ($posts as $post) {
+            $forum_user_id = get_post_meta($post->ID, 'forum_user_id', true);
+            $forum_category = get_post_meta($post->ID, 'forum_category', true);
+            
+            // Get forum user details
+            global $wpdb;
+            $users_table = $wpdb->prefix . 'forum_users';
+            $user = $wpdb->get_row($wpdb->prepare(
+                "SELECT display_name, avatar_url FROM $users_table WHERE id = %d",
+                $forum_user_id
+            ));
+            
+            // Get KaiOS categories
+            $kaios_terms = wp_get_post_terms($post->ID, 'kaios_category');
+            $kaios_categories = array();
+            foreach ($kaios_terms as $term) {
+                $kaios_categories[] = $term->name;
+            }
+            
+            $formatted_posts[] = array(
+                'id' => $post->ID,
+                'title' => $post->post_title,
+                'content' => $post->post_content,
+                'excerpt' => wp_trim_words($post->post_content, 30),
+                'created_date' => $post->post_date,
+                'category' => $forum_category,
+                'kaios_categories' => $kaios_categories,
+                'display_name' => $user ? $user->display_name : 'Unknown User',
+                'avatar_url' => $user ? $user->avatar_url : '',
+                'views' => get_post_meta($post->ID, 'post_views', true) ?: 0,
+                'replies_count' => get_comments_number($post->ID)
+            );
+        }
+        
+        return $formatted_posts;
+    }
+}
+
+// AJAX handlers for forum operations
+add_action('wp_ajax_create_forum_post', 'handle_create_forum_post');
+add_action('wp_ajax_nopriv_create_forum_post', 'handle_create_forum_post');
+
+function handle_create_forum_post() {
+    check_ajax_referer('forum_auth_nonce', 'nonce');
+    
+    $current_user = ForumAuth::get_current_user();
+    if (!$current_user) {
+        wp_send_json(array('success' => false, 'message' => 'Please login to create posts.'));
+        return;
+    }
+    
+    $category = sanitize_text_field($_POST['category']);
+    $title = sanitize_text_field($_POST['title']);
+    $content = wp_kses_post($_POST['content']);
+    $kaios_category = isset($_POST['kaios_category']) ? sanitize_text_field($_POST['kaios_category']) : '';
+    $tech_category = isset($_POST['tech_category']) ? sanitize_text_field($_POST['tech_category']) : '';
+    
+    $result = ForumPostManager::create_post($current_user->id, $category, $title, $content, $kaios_category, $tech_category);
+    wp_send_json($result);
+}
+
+add_action('wp_ajax_create_forum_reply', 'handle_create_forum_reply');
+add_action('wp_ajax_nopriv_create_forum_reply', 'handle_create_forum_reply');
+
+function handle_create_forum_reply() {
+    check_ajax_referer('forum_auth_nonce', 'nonce');
+    
+    $current_user = ForumAuth::get_current_user();
+    if (!$current_user) {
+        wp_send_json(array('success' => false, 'message' => 'Please login to reply.'));
+        return;
+    }
+    
+    $post_id = intval($_POST['post_id']);
+    $content = wp_kses_post($_POST['content']);
+    $parent_reply_id = !empty($_POST['parent_reply_id']) ? intval($_POST['parent_reply_id']) : null;
+    
+    $result = ForumPostManager::create_reply($current_user->id, $post_id, $content, $parent_reply_id);
+    wp_send_json($result);
+}
+
+add_action('wp_ajax_get_forum_posts', 'handle_get_forum_posts');
+add_action('wp_ajax_nopriv_get_forum_posts', 'handle_get_forum_posts');
+
+function handle_get_forum_posts() {
+    check_ajax_referer('forum_auth_nonce', 'nonce');
+    
+    $category = sanitize_text_field($_POST['category']);
+    $page = intval($_POST['page']) ?: 1;
+    $limit = 20;
+    $offset = ($page - 1) * $limit;
+    
+    $posts = ForumPostManager::get_posts($category, $limit, $offset);
+    
+    wp_send_json(array('success' => true, 'posts' => $posts));
+}
+
+add_action('wp_ajax_get_kaios_posts', 'handle_get_kaios_posts');
+add_action('wp_ajax_nopriv_get_kaios_posts', 'handle_get_kaios_posts');
+
+function handle_get_kaios_posts() {
+    check_ajax_referer('forum_auth_nonce', 'nonce');
+    
+    $limit = intval($_POST['limit']) ?: 10;
+    
+    $posts = ForumPostManager::get_kaios_posts($limit);
+    
+    wp_send_json(array('success' => true, 'posts' => $posts));
+}
 
 /**
  * Custom Walker for Navigation Menu

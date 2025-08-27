@@ -35,6 +35,9 @@
         // Initialize Forum Tabs
         initForumTabs();
         
+        // Initialize KaiOS Page Features
+        initKaiOSPage();
+        
     });
 
     /**
@@ -474,4 +477,212 @@
         initAccessibility();
     });
 
+    /**
+     * KaiOS Page Features
+     */
+    function initKaiOSPage() {
+        if ($('.kaios-main').length) {
+            
+            // Smooth scrolling for internal navigation
+            $('.quick-links a, .hero-buttons a').on('click', function(e) {
+                if (this.hash !== '') {
+                    e.preventDefault();
+                    var hash = this.hash;
+                    var target = $(hash);
+                    
+                    if (target.length) {
+                        $('html, body').animate({
+                            scrollTop: target.offset().top - 100
+                        }, 800);
+                    }
+                }
+            });
+            
+            // Animate stats on scroll
+            function animateStats() {
+                $('.stat-number').each(function() {
+                    var $this = $(this);
+                    var countTo = $this.text().replace(/\D/g, '');
+                    var suffix = $this.text().replace(/[0-9]/g, '');
+                    
+                    if (countTo && !$this.hasClass('animated')) {
+                        $this.addClass('animated');
+                        $({ countNum: 0 }).animate({
+                            countNum: countTo
+                        }, {
+                            duration: 2000,
+                            easing: 'swing',
+                            step: function() {
+                                $this.text(Math.floor(this.countNum) + suffix);
+                            },
+                            complete: function() {
+                                $this.text(countTo + suffix);
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Trigger stats animation when in viewport
+            var statsTriggered = false;
+            $(window).scroll(function() {
+                if ($('.stats-grid').length && !statsTriggered) {
+                    var statsTop = $('.stats-grid').offset().top;
+                    var scrollTop = $(window).scrollTop();
+                    var windowHeight = $(window).height();
+                    
+                    if (scrollTop + windowHeight > statsTop + 100) {
+                        animateStats();
+                        statsTriggered = true;
+                    }
+                }
+            });
+            
+            // Add hover effects to cards
+            $('.card, .app-item, .dev-card, .mod-category, .featured-app, .topic-item').hover(
+                function() {
+                    $(this).addClass('hover-effect');
+                },
+                function() {
+                    $(this).removeClass('hover-effect');
+                }
+            );
+            
+            // Forum interaction effects
+            $('.topic-item').on('click', function() {
+                $(this).addClass('topic-clicked');
+                setTimeout(function() {
+                    $('.topic-item').removeClass('topic-clicked');
+                }, 300);
+            });
+            
+            // Modification tool interactions
+            $('.mod-category').on('mouseenter', function() {
+                $(this).find('.mod-icon').addClass('icon-bounce');
+            }).on('mouseleave', function() {
+                $(this).find('.mod-icon').removeClass('icon-bounce');
+            });
+            
+            // Device mockup interaction
+            $('.kaios-device-mockup').on('click', function() {
+                $(this).addClass('device-shake');
+                setTimeout(function() {
+                    $('.kaios-device-mockup').removeClass('device-shake');
+                }, 600);
+            });
+            
+        }
+    }
+    
 })(jQuery);
+
+/* Additional CSS for KaiOS animations */
+jQuery(document).ready(function($) {
+    if ($('.kaios-main').length) {
+        $('<style>')
+            .prop('type', 'text/css')
+            .html(`
+                .hover-effect {
+                    transform: translateY(-5px) scale(1.02);
+                    transition: all 0.3s ease;
+                }
+                
+                .device-shake {
+                    animation: shake 0.6s ease-in-out;
+                }
+                
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-5px) rotate(-1deg); }
+                    75% { transform: translateX(5px) rotate(1deg); }
+                }
+                
+                .kaios-section {
+                    animation: fadeInUp 0.6s ease-out;
+                    animation-fill-mode: both;
+                }
+                
+                .kaios-section:nth-child(2) { animation-delay: 0.1s; }
+                .kaios-section:nth-child(3) { animation-delay: 0.2s; }
+                .kaios-section:nth-child(4) { animation-delay: 0.3s; }
+                .kaios-section:nth-child(5) { animation-delay: 0.4s; }
+                .kaios-section:nth-child(6) { animation-delay: 0.5s; }
+                
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(30px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                .kaios-hero {
+                    animation: fadeIn 1s ease-out;
+                }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                
+                .topic-clicked {
+                    background: var(--light) !important;
+                    transform: scale(0.98);
+                }
+                
+                .icon-bounce {
+                    animation: iconBounce 0.6s ease-in-out;
+                }
+                
+                @keyframes iconBounce {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.1); }
+                }
+                
+                .forum-category {
+                    animation: slideInUp 0.8s ease-out;
+                    animation-fill-mode: both;
+                }
+                
+                .forum-category:nth-child(1) { animation-delay: 0.1s; }
+                .forum-category:nth-child(2) { animation-delay: 0.2s; }
+                .forum-category:nth-child(3) { animation-delay: 0.3s; }
+                
+                .mod-category {
+                    animation: zoomIn 0.8s ease-out;
+                    animation-fill-mode: both;
+                }
+                
+                .mod-category:nth-child(1) { animation-delay: 0.1s; }
+                .mod-category:nth-child(2) { animation-delay: 0.2s; }
+                .mod-category:nth-child(3) { animation-delay: 0.3s; }
+                .mod-category:nth-child(4) { animation-delay: 0.4s; }
+                
+                @keyframes slideInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(50px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                @keyframes zoomIn {
+                    from {
+                        opacity: 0;
+                        transform: scale(0.8);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                }
+            `)
+            .appendTo('head');
+    }
+});
